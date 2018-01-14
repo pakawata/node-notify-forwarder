@@ -1,0 +1,10 @@
+{
+  "name": "node-inotify-forwarder",
+  "version": "0.0.1",
+  "description": "iNotify forwarder",
+  "author": "Pakawat Amornwattanasawat",
+  "license": "MIT",
+  "dependencies": {
+    "socket.io": "^2.0.4"
+  }
+}
