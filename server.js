@@ -34,14 +34,18 @@ broadcastFileEvent = (eventType, filename) => {
     io.sockets.emit('fileEvent', {eventType, filename});
 }
 
+removeFromWatchedList = (filename) => {
+    const index = watchedList.findIndex((value) => {
+        return value === filename;
+    })
+    watchedList.splice(index, 1);
+}
+
 io.on('connection', (socket) => {
     console.log('connected');
 
     socket.on('notify:success', (filename) => {
-        const index = temp.findIndex((value) => {
-            return value === filename;
-        })
-        temp.splice(index, 1);
+       removeFromWatchedList(filename);
     });
     
 });
