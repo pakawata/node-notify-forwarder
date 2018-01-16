@@ -3,29 +3,30 @@ const fs = require('fs');
 const path = require('path');
 const config = require('./config.json');
 
-const mountPoint = config.mountPoint;
+const sender = process.argv[2]||config.server;
+const mountPoint = process.argv[3]||config.mountPoint;
 
-const socket = io.connect(config.server, {
+const socket = io.connect(sender, {
     reconnection: true
 });
 
-triggerFileEvent = (eventType, filePath, filename) => {
+triggerFileEvent = (eventType, fullPath, filename) => {
     if (eventType === 'change') {
-        triggerChange(filePath, filename);
+        triggerChange(fullPath, filename);
     }
 }
 
-triggerChange = (filePath, filename) => {
+triggerChange = (fullPath, filename) => {
     socket.emit('notify:recieve', filename);
-    console.log('recieve', filePath);
+    console.log('recieve', fullPath);
     const time = new Date();
-    fs.utimes(filePath, time, time, (err) => {
+    fs.utimes(fullPath, time, time, (err) => {
         if (err) throw err;
         socket.emit('notify:success', filename);
     })
 }
 
 socket.on('fileEvent', (data) => {
-    const filePath = path.join(mountPoint, data.filename.replace(/\\/g, path.sep));
-    triggerFileEvent(data.eventType, filePath, data.filename);
+    const fullPath = path.join(mountPoint, data.filename.replace(/\\/g, path.sep));
+    triggerFileEvent(data.eventType, fullPath, data.filename);
 })

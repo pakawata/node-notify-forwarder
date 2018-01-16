@@ -3,27 +3,30 @@ const path = require('path');
 const EventEmitter = require('events');
 const config = require('./config.json');
 
-const io = require('socket.io').listen(config.port);
-const watchPath = config.watchPoint;
-let watchedList = [];
+let listenPort = process.argv[2]||config.port||3200;
 
+const io = require('socket.io').listen(listenPort);
+const watchPath = process.argv[3]||config.watchPoint;
+let watchedList = [];
 
 watchFileChange = (watchPath, callBack) => {
     if (!watchPath || typeof(watchPath) !== 'string') return;
     fs.watch(watchPath, {recursive: true}, (eventType, filename) => {
+        const fullPath = path.join(watchPath, filename);
+        if (!filename || !fs.lstatSync(fullPath).isFile() || eventType !== 'change') {
+            return;
+        }
+
         const index = watchedList.findIndex((value) => {
             return value === filename;
         });
-        
+
         if (index >= 0) return;
 
         watchedList.push(filename);
         
-        const fullPath = path.join(watchPath, filename);
-        if (eventType === 'change' && filename && fs.lstatSync(fullPath).isFile()) {
-            if (callBack && typeof(callBack) === 'function') {
-                callBack(eventType, filename);
-            }
+        if (callBack && typeof(callBack) === 'function') {
+            callBack(eventType, filename);
         }
     });
 
