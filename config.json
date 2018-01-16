@@ -1,5 +1,6 @@
 {
-    "watchPoint": "C:\\Data\\Projects\\pattern-lab-wins\\source",
-    "mountPoint": "/home/pai/Projects/pattern-lab-wins/source",
-    "server": "http://192.168.56.1:3200/"
+    "watchPoint": "",
+    "mountPoint": "",
+    "server": "",
+    "port": 3200
 }

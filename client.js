@@ -1,10 +1,11 @@
 const io = require('socket.io-client');
 const fs = require('fs');
 const path = require('path');
+const config = require('./config.json');
 
-const mountPoint = '';
+const mountPoint = config.mountPoint;
 
-const socket = io.connect("", {
+const socket = io.connect(config.server, {
     reconnection: true
 });
 
@@ -22,15 +23,6 @@ triggerChange = (filePath, filename) => {
         if (err) throw err;
         socket.emit('notify:success', filename);
     })
-    // fs.readFile(filePath, 'utf8', function (err, data) {
-    //     if (err) throw err;
-    //     fs.writeFile (filePath, data, function(err) {
-    //         if (err) throw err;
-    //         console.log('success', filePath);
-    //         socket.emit('notify:success', filename);
-    //     });
-        
-    // });
 }
 
 socket.on('fileEvent', (data) => {

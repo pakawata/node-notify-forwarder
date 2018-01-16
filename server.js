@@ -1,22 +1,23 @@
-const io = require('socket.io').listen(3200);
 const fs = require('fs');
 const path = require('path');
 const EventEmitter = require('events');
+const config = require('./config.json');
 
-const watchPath = ''; //TODO : use configuration file.
-let temp = [];
+const io = require('socket.io').listen(config.port);
+const watchPath = config.watchPoint;
+let watchedList = [];
 
 
 watchFileChange = (watchPath, callBack) => {
     if (!watchPath || typeof(watchPath) !== 'string') return;
     fs.watch(watchPath, {recursive: true}, (eventType, filename) => {
-        const index = temp.findIndex((value) => {
+        const index = watchedList.findIndex((value) => {
             return value === filename;
         });
         
         if (index >= 0) return;
 
-        temp.push(filename);
+        watchedList.push(filename);
         
         const fullPath = path.join(watchPath, filename);
         if (eventType === 'change' && filename && fs.lstatSync(fullPath).isFile()) {
